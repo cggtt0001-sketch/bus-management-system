@@ -1,0 +1,110 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h2>Bus Schedules</h2>
+    {% if buses and routes %}
+    <button class="btn btn-primary" id="addScheduleBtn">Add Schedule</button>
+    {% endif %}
+</div>
+
+{% if not buses or not routes %}
+<div class="alert alert-warning">
+    {% if not buses %}
+    <p>Please add buses first before creating schedules.</p>
+    {% endif %}
+    {% if not routes %}
+    <p>Please add routes first before creating schedules.</p>
+    {% endif %}
+</div>
+{% elif schedules %}
+<div class="table-responsive">
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>Bus</th>
+                <th>Route</th>
+                <th>Departure</th>
+                <th>Arrival</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for schedule in schedules %}
+            <tr>
+                <td>{{ schedule.bus.bus_number }}</td>
+                <td>{{ schedule.route.route_name }}</td>
+                <td>{{ schedule.departure_time }}</td>
+                <td>{{ schedule.arrival_time }}</td>
+                <td>
+                    <button class="btn btn-sm btn-primary edit-schedule-btn"
+                            data-id="{{ schedule.id }}"
+                            data-bus-id="{{ schedule.bus_id }}"
+                            data-route-id="{{ schedule.route_id }}"
+                            data-departure="{{ schedule.departure_time }}"
+                            data-arrival="{{ schedule.arrival_time }}">
+                        Edit
+                    </button>
+                    <form method="POST" action="{{ url_for('schedule.delete_schedule', id=schedule.id) }}" style="display:inline;">
+                        <button type="submit" class="btn btn-sm btn-danger">Delete</button>
+                    </form>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% else %}
+<div class="alert alert-info">
+    No schedules found. Click "Add Schedule" to create one.
+</div>
+{% endif %}
+
+<!-- Schedule Modal -->
+<div class="modal fade" id="scheduleModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="modalTitle">Add Schedule</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <form id="scheduleForm" method="POST">
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label for="bus_id" class="form-label">Bus</label>
+                        <select class="form-select" id="bus_id" name="bus_id" required>
+                            <option value="">Select a bus</option>
+                            {% for bus in buses %}
+                            <option value="{{ bus.id }}">{{ bus.bus_number }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label for="route_id" class="form-label">Route</label>
+                        <select class="form-select" id="route_id" name="route_id" required>
+                            <option value="">Select a route</option>
+                            {% for route in routes %}
+                            <option value="{{ route.id }}">{{ route.route_name }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label for="departure_time" class="form-label">Departure Time</label>
+                        <input type="text" class="form-control" id="departure_time" name="departure_time" placeholder="HH:MM" required>
+                        <small class="form-text text-muted">24-hour format (e.g., 08:30)</small>
+                    </div>
+                    <div class="mb-3">
+                        <label for="arrival_time" class="form-label">Arrival Time</label>
+                        <input type="text" class="form-control" id="arrival_time" name="arrival_time" placeholder="HH:MM" required>
+                        <small class="form-text text-muted">24-hour format (e.g., 10:30)</small>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Save</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}
