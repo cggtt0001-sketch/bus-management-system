@@ -1,0 +1,74 @@
+{% extends "base.html" %}
+
+{% block title %}Crew Assignments - Bus Depot Management{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h2 style="color: #fd7e14; border-left: 5px solid #fd7e14; padding-left: 15px;">
+        <i class="bi bi-list-check"></i> Crew Assignments
+    </h2>
+    <div>
+        <a href="{{ url_for('crew.list_crew') }}" class="btn btn-outline-secondary me-2">
+            <i class="bi bi-arrow-left"></i> Back to Crew
+        </a>
+        <a href="{{ url_for('crew.assign_crew') }}" class="btn" style="background-color: #fd7e14; color: white;">
+            <i class="bi bi-plus-circle"></i> Assign Crew to Schedule
+        </a>
+    </div>
+</div>
+
+{% if assignments %}
+<div class="table-responsive">
+    <table class="table table-striped table-hover">
+        <thead class="table-light">
+            <tr>
+                <th>Schedule Info</th>
+                <th>Crew Name</th>
+                <th>Role</th>
+                <th>Assignment Date</th>
+                <th>Notes</th>
+                <th class="text-end">Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for assignment in assignments %}
+            <tr>
+                <td>
+                    <strong>{{ assignment.schedule.route.route_name }}</strong><br>
+                    <small class="text-muted">
+                        {{ assignment.schedule.departure_time.strftime('%H:%M') }} -
+                        {{ assignment.schedule.bus.registration_number }}
+                    </small>
+                </td>
+                <td>{{ assignment.crew_member.name }}</td>
+                <td>
+                    {% if assignment.crew_member.role == 'Driver' %}
+                        <span class="badge bg-primary">Driver</span>
+                    {% elif assignment.crew_member.role == 'Conductor' %}
+                        <span class="badge bg-success">Conductor</span>
+                    {% else %}
+                        <span class="badge bg-secondary">Maintenance Staff</span>
+                    {% endif %}
+                </td>
+                <td>{{ assignment.assignment_date.strftime('%Y-%m-%d') }}</td>
+                <td>{{ assignment.notes or 'N/A' }}</td>
+                <td class="text-end">
+                    <form action="{{ url_for('crew.delete_assignment', id=assignment.id) }}" method="POST" class="d-inline" onsubmit="return confirm('Are you sure you want to remove this assignment?');">
+                        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+                        <button type="submit" class="btn btn-sm btn-danger">
+                            <i class="bi bi-trash"></i> Remove
+                        </button>
+                    </form>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% else %}
+<div class="alert alert-info text-center">
+    <i class="bi bi-info-circle fs-2"></i>
+    <p class="mt-2 mb-0">No crew assignments found.</p>
+</div>
+{% endif %}
+{% endblock %}
