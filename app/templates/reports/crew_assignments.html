@@ -1,0 +1,70 @@
+{% extends "base.html" %}
+
+{% block title %}Crew Assignments Report - Bus Depot Management{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <h2 style="color: #fd7e14; border-left: 5px solid #fd7e14; padding-left: 15px;">
+            <i class="bi bi-people"></i> Crew Assignments Report
+        </h2>
+        <p class="text-muted ms-3">Report generated on {{ report_date.strftime('%Y-%m-%d') }}</p>
+    </div>
+    <div>
+        <a href="{{ url_for('reports.crew_assignments_csv') }}" class="btn btn-success me-2">
+            <i class="bi bi-file-earmark-spreadsheet"></i> Export to CSV
+        </a>
+        <a href="{{ url_for('reports.crew_assignments_pdf') }}" class="btn btn-danger me-2">
+            <i class="bi bi-file-earmark-pdf"></i> Export to PDF
+        </a>
+        <a href="{{ url_for('reports.index') }}" class="btn btn-secondary">
+            <i class="bi bi-arrow-left"></i> Back
+        </a>
+    </div>
+</div>
+
+{% if assignments %}
+<div class="table-responsive">
+    <table class="table table-striped table-hover">
+        <thead class="table-light">
+            <tr>
+                <th>Crew ID</th>
+                <th>Crew Name</th>
+                <th>Role</th>
+                <th>Schedule</th>
+                <th>Assignment Date</th>
+                <th>Notes</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for assignment in assignments %}
+            <tr>
+                <td><strong>{{ assignment.crew_member.crew_id }}</strong></td>
+                <td>{{ assignment.crew_member.name }}</td>
+                <td>
+                    {% if assignment.crew_member.role == 'Driver' %}
+                        <span class="badge bg-primary">Driver</span>
+                    {% elif assignment.crew_member.role == 'Conductor' %}
+                        <span class="badge bg-success">Conductor</span>
+                    {% else %}
+                        <span class="badge bg-secondary">Maintenance Staff</span>
+                    {% endif %}
+                </td>
+                <td>
+                    {{ assignment.schedule.route.route_name }}<br>
+                    <small class="text-muted">{{ assignment.schedule.departure_time.strftime('%H:%M') }} - {{ assignment.schedule.bus.registration_number }}</small>
+                </td>
+                <td>{{ assignment.assignment_date.strftime('%Y-%m-%d') }}</td>
+                <td>{{ assignment.notes or 'N/A' }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% else %}
+<div class="alert alert-info text-center">
+    <i class="bi bi-info-circle fs-2"></i>
+    <p class="mt-2 mb-0">No crew assignments found.</p>
+</div>
+{% endif %}
+{% endblock %}
