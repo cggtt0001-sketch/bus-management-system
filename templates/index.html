@@ -1,0 +1,60 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="text-center mb-5">
+    <h1 class="display-4">Bus Management System</h1>
+    <p class="lead">Manage your bus schedules, buses, and routes efficiently</p>
+</div>
+
+<div class="row">
+    <!-- Schedules Card -->
+    <div class="col-md-4 mb-4">
+        <div class="card h-100 text-center">
+            <div class="card-body">
+                <div class="card-icon mb-3">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" fill="currentColor" class="bi bi-calendar-check text-primary" viewBox="0 0 16 16">
+                        <path d="M10.854 7.146a.5.5 0 0 1 0 .708l-3 3a.5.5 0 0 1-.708 0l-1.5-1.5a.5.5 0 1 1 .708-.708L7.5 9.793l2.646-2.647a.5.5 0 0 1 .708 0z"/>
+                        <path d="M3.5 0a.5.5 0 0 1 .5.5V1h8V.5a.5.5 0 0 1 1 0V1h1a2 2 0 0 1 2 2v11a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V3a2 2 0 0 1 2-2h1V.5a.5.5 0 0 1 .5-.5zM1 4v10a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V4H1z"/>
+                    </svg>
+                </div>
+                <h5 class="card-title">Bus Schedules</h5>
+                <p class="card-text">View and manage bus schedules including departure and arrival times.</p>
+                <a href="{{ url_for('schedule.list_schedules') }}" class="btn btn-primary">Manage Schedules</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Buses Card -->
+    <div class="col-md-4 mb-4">
+        <div class="card h-100 text-center">
+            <div class="card-body">
+                <div class="card-icon mb-3">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" fill="currentColor" class="bi bi-bus-front text-success" viewBox="0 0 16 16">
+                        <path d="M5 11a1 1 0 1 1-2 0 1 1 0 0 1 2 0Zm8 0a1 1 0 1 1-2 0 1 1 0 0 1 2 0Zm-6-1a1 1 0 1 0 0 2h2a1 1 0 1 0 0-2H7Z"/>
+                        <path d="M8 1a2 2 0 0 0-2 2v4H5a1 1 0 0 0-1 1v3.9c0 .625.562 1.092 1.17 1.092h.83v1.5a.5.5 0 0 0 .5.5h1a.5.5 0 0 0 .5-.5v-1.5h2v1.5a.5.5 0 0 0 .5.5h1a.5.5 0 0 0 .5-.5v-1.5h.83c.608 0 1.17-.467 1.17-1.092V8a1 1 0 0 0-1-1h-1V3a2 2 0 0 0-2-2H8Zm0 1h2a1 1 0 0 1 1 1v4H7V3a1 1 0 0 1 1-1ZM5 8h6v4H5V8Z"/>
+                    </svg>
+                </div>
+                <h5 class="card-title">Buses</h5>
+                <p class="card-text">Add, edit, and manage your fleet of buses.</p>
+                <a href="{{ url_for('bus.list_buses') }}" class="btn btn-success">Manage Buses</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Routes Card -->
+    <div class="col-md-4 mb-4">
+        <div class="card h-100 text-center">
+            <div class="card-body">
+                <div class="card-icon mb-3">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" fill="currentColor" class="bi bi-signpost text-warning" viewBox="0 0 16 16">
+                        <path d="M7 1.414V4H2a1 1 0 0 0-1 1v4a1 1 0 0 0 1 1h5v6h2v-6h3.532a1 1 0 0 0 .768-.36l1.933-2.32a.5.5 0 0 0 0-.64L13.3 4.36a1 1 0 0 0-.768-.36H9V1.414a1 1 0 0 0-2 0zM12.532 5l1.666 2-1.666 2H2V5h10.532z"/>
+                    </svg>
+                </div>
+                <h5 class="card-title">Routes</h5>
+                <p class="card-text">Define and manage bus routes with locations and distances.</p>
+                <a href="{{ url_for('route.list_routes') }}" class="btn btn-warning">Manage Routes</a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
