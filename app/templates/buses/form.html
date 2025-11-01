@@ -1,0 +1,82 @@
+{% extends "base.html" %}
+
+{% block title %}{{ title }} - Bus Depot Management{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-8">
+        <h2 style="color: #28a745; border-left: 5px solid #28a745; padding-left: 15px;" class="mb-4">
+            <i class="bi bi-bus-front"></i> {{ title }}
+        </h2>
+
+        <div class="card">
+            <div class="card-body">
+                <form method="POST" novalidate>
+                    {{ form.hidden_tag() }}
+
+                    <div class="mb-3">
+                        {{ form.registration_number.label(class="form-label") }}
+                        {{ form.registration_number(class="form-control" + (" is-invalid" if form.registration_number.errors else "")) }}
+                        {% if form.registration_number.errors %}
+                            <div class="invalid-feedback d-block">
+                                {{ form.registration_number.errors[0] }}
+                            </div>
+                        {% endif %}
+                    </div>
+
+                    <div class="mb-3">
+                        {{ form.capacity.label(class="form-label") }}
+                        {{ form.capacity(class="form-control" + (" is-invalid" if form.capacity.errors else "")) }}
+                        {% if form.capacity.errors %}
+                            <div class="invalid-feedback d-block">
+                                {{ form.capacity.errors[0] }}
+                            </div>
+                        {% endif %}
+                    </div>
+
+                    <div class="mb-3">
+                        {{ form.model.label(class="form-label") }}
+                        {{ form.model(class="form-control" + (" is-invalid" if form.model.errors else "")) }}
+                        <div class="form-text">Optional: Bus model/make</div>
+                        {% if form.model.errors %}
+                            <div class="invalid-feedback d-block">
+                                {{ form.model.errors[0] }}
+                            </div>
+                        {% endif %}
+                    </div>
+
+                    <div class="mb-3">
+                        {{ form.status.label(class="form-label") }}
+                        {{ form.status(class="form-select" + (" is-invalid" if form.status.errors else "")) }}
+                        {% if form.status.errors %}
+                            <div class="invalid-feedback d-block">
+                                {{ form.status.errors[0] }}
+                            </div>
+                        {% endif %}
+                    </div>
+
+                    <div class="mb-3">
+                        {{ form.purchase_date.label(class="form-label") }}
+                        {{ form.purchase_date(class="form-control" + (" is-invalid" if form.purchase_date.errors else "")) }}
+                        <div class="form-text">Optional: Date of purchase</div>
+                        {% if form.purchase_date.errors %}
+                            <div class="invalid-feedback d-block">
+                                {{ form.purchase_date.errors[0] }}
+                            </div>
+                        {% endif %}
+                    </div>
+
+                    <div class="d-flex justify-content-between">
+                        <a href="{{ url_for('buses.list_buses') }}" class="btn btn-secondary">
+                            <i class="bi bi-x-circle"></i> Cancel
+                        </a>
+                        <button type="submit" class="btn btn-success">
+                            <i class="bi bi-check-circle"></i> Save Bus
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
