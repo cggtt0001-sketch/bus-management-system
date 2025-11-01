@@ -1,0 +1,87 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h2>Routes</h2>
+    <button class="btn btn-primary" id="addRouteBtn">Add Route</button>
+</div>
+
+{% if routes %}
+<div class="table-responsive">
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>Route Name</th>
+                <th>Start Location</th>
+                <th>End Location</th>
+                <th>Distance (km)</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for route in routes %}
+            <tr>
+                <td>{{ route.route_name }}</td>
+                <td>{{ route.start_location }}</td>
+                <td>{{ route.end_location }}</td>
+                <td>{{ route.distance }}</td>
+                <td>
+                    <button class="btn btn-sm btn-primary edit-route-btn"
+                            data-id="{{ route.id }}"
+                            data-route-name="{{ route.route_name }}"
+                            data-start-location="{{ route.start_location }}"
+                            data-end-location="{{ route.end_location }}"
+                            data-distance="{{ route.distance }}">
+                        Edit
+                    </button>
+                    <form method="POST" action="{{ url_for('route.delete_route', id=route.id) }}" style="display:inline;">
+                        <button type="submit" class="btn btn-sm btn-danger">Delete</button>
+                    </form>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% else %}
+<div class="alert alert-info">
+    No routes found. Click "Add Route" to create one.
+</div>
+{% endif %}
+
+<!-- Route Modal -->
+<div class="modal fade" id="routeModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="modalTitle">Add Route</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <form id="routeForm" method="POST">
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label for="route_name" class="form-label">Route Name</label>
+                        <input type="text" class="form-control" id="route_name" name="route_name" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="start_location" class="form-label">Start Location</label>
+                        <input type="text" class="form-control" id="start_location" name="start_location" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="end_location" class="form-label">End Location</label>
+                        <input type="text" class="form-control" id="end_location" name="end_location" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="distance" class="form-label">Distance (km)</label>
+                        <input type="number" class="form-control" id="distance" name="distance" step="0.01" min="0.01" required>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Save</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}
