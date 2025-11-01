@@ -1,0 +1,254 @@
+/**
+ * Custom styles for Bus Depot Management System
+ */
+
+/* ==================== Color Variables ==================== */
+:root {
+    --bus-green: #28a745;
+    --route-yellow: #ffc107;
+    --schedule-blue: #007bff;
+    --crew-orange: #fd7e14;
+    --dashboard-teal: #20c997;
+    --reports-purple: #6f42c1;
+}
+
+/* ==================== Global Styles ==================== */
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background-color: #f5f7fa;
+}
+
+.container {
+    max-width: 1200px;
+}
+
+/* ==================== Navigation Bar ==================== */
+.navbar {
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.navbar-brand {
+    font-weight: 600;
+    font-size: 1.2rem;
+}
+
+.nav-link {
+    position: relative;
+    padding: 0.5rem 1rem;
+    transition: all 0.3s ease;
+}
+
+.nav-link.active {
+    font-weight: 600;
+    border-bottom: 3px solid #ffffff;
+}
+
+.nav-link:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+    border-radius: 4px;
+}
+
+.color-indicator {
+    display: inline-block;
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    margin-right: 5px;
+}
+
+/* ==================== Cards (Homepage & Reports) ==================== */
+.module-card {
+    background-color: #ffffff;
+    border: 1px solid #dee2e6;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    transition: all 0.3s ease;
+    padding: 20px;
+}
+
+.module-card:hover {
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    transform: translateY(-2px);
+}
+
+.module-card .card-title {
+    font-size: 1.25rem;
+    font-weight: 600;
+    margin-bottom: 15px;
+}
+
+.module-card .card-text {
+    margin-bottom: 20px;
+    line-height: 1.6;
+}
+
+/* ==================== Tables ==================== */
+.table {
+    background-color: #ffffff;
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+.table thead {
+    background-color: #f8f9fa;
+}
+
+.table th {
+    font-weight: 600;
+    text-transform: uppercase;
+    font-size: 0.85rem;
+    letter-spacing: 0.5px;
+    padding: 15px;
+    border-bottom: 2px solid #dee2e6;
+}
+
+.table td {
+    padding: 12px 15px;
+    vertical-align: middle;
+}
+
+.table-hover tbody tr:hover {
+    background-color: #f8f9fa;
+}
+
+.table-responsive {
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+/* ==================== Buttons ==================== */
+.btn {
+    border-radius: 6px;
+    padding: 0.5rem 1rem;
+    font-weight: 500;
+    transition: all 0.2s ease;
+}
+
+.btn:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+}
+
+.btn-sm {
+    padding: 0.375rem 0.75rem;
+    font-size: 0.875rem;
+}
+
+/* ==================== Forms ==================== */
+.card {
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.card-header {
+    font-weight: 600;
+    border-top-left-radius: 8px;
+    border-top-right-radius: 8px;
+}
+
+.form-control, .form-select {
+    border-radius: 6px;
+    border: 1px solid #ced4da;
+    padding: 0.625rem 0.875rem;
+    transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+}
+
+.form-control:focus, .form-select:focus {
+    border-color: #80bdff;
+    box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+}
+
+.form-label {
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+    color: #495057;
+}
+
+.form-text {
+    font-size: 0.875rem;
+    color: #6c757d;
+    margin-top: 0.25rem;
+}
+
+.invalid-feedback {
+    font-size: 0.875rem;
+}
+
+/* ==================== Badges ==================== */
+.badge {
+    padding: 0.375rem 0.75rem;
+    font-weight: 500;
+    border-radius: 4px;
+}
+
+/* ==================== Flash Messages ==================== */
+.alert {
+    border-radius: 6px;
+    border: none;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    margin-bottom: 1rem;
+}
+
+.alert-dismissible .btn-close {
+    padding: 0.75rem;
+}
+
+/* ==================== Dashboard Specific ==================== */
+.dashboard-card {
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+/* ==================== Footer ==================== */
+.footer {
+    margin-top: 3rem;
+    background-color: #f8f9fa;
+    border-top: 1px solid #dee2e6;
+}
+
+/* ==================== Utility Classes ==================== */
+.text-muted {
+    color: #6c757d !important;
+}
+
+/* ==================== Responsive Adjustments ==================== */
+@media (max-width: 768px) {
+    .navbar-brand {
+        font-size: 1rem;
+    }
+
+    .module-card {
+        margin-bottom: 1rem;
+    }
+
+    .btn-group-sm .btn {
+        font-size: 0.75rem;
+        padding: 0.25rem 0.5rem;
+    }
+
+    .table th, .table td {
+        font-size: 0.875rem;
+        padding: 8px;
+    }
+}
+
+@media (max-width: 576px) {
+    h2 {
+        font-size: 1.5rem;
+    }
+
+    .card-body {
+        padding: 1rem;
+    }
+}
+
+/* ==================== Print Styles ==================== */
+@media print {
+    .navbar, .btn, .footer {
+        display: none;
+    }
+
+    .table {
+        box-shadow: none;
+    }
+}
