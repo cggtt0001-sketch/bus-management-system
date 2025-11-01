@@ -1,0 +1,102 @@
+{% extends "base.html" %}
+
+{% block title %}{{ title }} - Bus Depot Management{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-8">
+        <h2 style="color: #007bff; border-left: 5px solid #007bff; padding-left: 15px;" class="mb-4">
+            <i class="bi bi-calendar-check"></i> {{ title }}
+        </h2>
+
+        {% if no_data %}
+        <div class="alert alert-warning">
+            <i class="bi bi-exclamation-triangle"></i> Please add routes and buses before creating schedules.
+            <div class="mt-2">
+                <a href="{{ url_for('routes.add_route') }}" class="btn btn-sm btn-warning">Add Route</a>
+                <a href="{{ url_for('buses.add_bus') }}" class="btn btn-sm btn-success">Add Bus</a>
+            </div>
+        </div>
+        {% else %}
+        <div class="card">
+            <div class="card-body">
+                <form method="POST" novalidate>
+                    {{ form.hidden_tag() }}
+
+                    <div class="mb-3">
+                        {{ form.route_id.label(class="form-label") }}
+                        {{ form.route_id(class="form-select" + (" is-invalid" if form.route_id.errors else "")) }}
+                        {% if form.route_id.errors %}
+                            <div class="invalid-feedback d-block">
+                                {{ form.route_id.errors[0] }}
+                            </div>
+                        {% endif %}
+                    </div>
+
+                    <div class="mb-3">
+                        {{ form.bus_id.label(class="form-label") }}
+                        {{ form.bus_id(class="form-select" + (" is-invalid" if form.bus_id.errors else "")) }}
+                        {% if form.bus_id.errors %}
+                            <div class="invalid-feedback d-block">
+                                {{ form.bus_id.errors[0] }}
+                            </div>
+                        {% endif %}
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            {{ form.departure_time.label(class="form-label") }}
+                            {{ form.departure_time(class="form-control" + (" is-invalid" if form.departure_time.errors else "")) }}
+                            {% if form.departure_time.errors %}
+                                <div class="invalid-feedback d-block">
+                                    {{ form.departure_time.errors[0] }}
+                                </div>
+                            {% endif %}
+                        </div>
+
+                        <div class="col-md-6 mb-3">
+                            {{ form.arrival_time.label(class="form-label") }}
+                            {{ form.arrival_time(class="form-control" + (" is-invalid" if form.arrival_time.errors else "")) }}
+                            {% if form.arrival_time.errors %}
+                                <div class="invalid-feedback d-block">
+                                    {{ form.arrival_time.errors[0] }}
+                                </div>
+                            {% endif %}
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        {{ form.frequency.label(class="form-label") }}
+                        {{ form.frequency(class="form-select" + (" is-invalid" if form.frequency.errors else "")) }}
+                        {% if form.frequency.errors %}
+                            <div class="invalid-feedback d-block">
+                                {{ form.frequency.errors[0] }}
+                            </div>
+                        {% endif %}
+                    </div>
+
+                    <div class="mb-3 form-check">
+                        {{ form.active(class="form-check-input" + (" is-invalid" if form.active.errors else "")) }}
+                        {{ form.active.label(class="form-check-label") }}
+                        {% if form.active.errors %}
+                            <div class="invalid-feedback d-block">
+                                {{ form.active.errors[0] }}
+                            </div>
+                        {% endif %}
+                    </div>
+
+                    <div class="d-flex justify-content-between">
+                        <a href="{{ url_for('schedules.list_schedules') }}" class="btn btn-secondary">
+                            <i class="bi bi-x-circle"></i> Cancel
+                        </a>
+                        <button type="submit" class="btn btn-primary">
+                            <i class="bi bi-check-circle"></i> Save Schedule
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}
