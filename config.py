@@ -1,0 +1,8 @@
+import os
+
+class Config:
+    """Application configuration"""
+    SECRET_KEY = os.environ.get('SECRET_KEY') or 'dev-secret-key-change-in-production'
+    SQLALCHEMY_DATABASE_URI = 'sqlite:///bus_management.db'
+    SQLALCHEMY_TRACK_MODIFICATIONS = False
+    WTF_CSRF_ENABLED = True
