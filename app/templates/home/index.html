@@ -1,0 +1,108 @@
+{% extends "base.html" %}
+
+{% block title %}Home - Bus Depot Management System{% endblock %}
+
+{% block content %}
+<div class="text-center mb-5">
+    <h1 class="display-4">Bus Depot Management System</h1>
+    <p class="lead text-muted">Central Hub for All Operations</p>
+</div>
+
+<div class="row g-4">
+    <!-- Buses Card -->
+    <div class="col-12 col-md-6 col-lg-4">
+        <div class="card module-card h-100" style="border-left: 5px solid #28a745;">
+            <div class="card-body">
+                <h5 class="card-title">
+                    <i class="bi bi-bus-front fs-3 text-success"></i>
+                    <span class="ms-2">Buses</span>
+                </h5>
+                <p class="card-text text-muted">Manage fleet, track status, maintenance records</p>
+                <a href="{{ url_for('buses.list_buses') }}" class="btn btn-success">
+                    <i class="bi bi-arrow-right-circle"></i> Manage Buses
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Routes Card -->
+    <div class="col-12 col-md-6 col-lg-4">
+        <div class="card module-card h-100" style="border-left: 5px solid #ffc107;">
+            <div class="card-body">
+                <h5 class="card-title">
+                    <i class="bi bi-geo-alt fs-3 text-warning"></i>
+                    <span class="ms-2">Routes</span>
+                </h5>
+                <p class="card-text text-muted">Configure routes, stops, distances</p>
+                <a href="{{ url_for('routes.list_routes') }}" class="btn btn-warning">
+                    <i class="bi bi-arrow-right-circle"></i> Manage Routes
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Schedules Card -->
+    <div class="col-12 col-md-6 col-lg-4">
+        <div class="card module-card h-100" style="border-left: 5px solid #007bff;">
+            <div class="card-body">
+                <h5 class="card-title">
+                    <i class="bi bi-calendar-check fs-3 text-primary"></i>
+                    <span class="ms-2">Schedules</span>
+                </h5>
+                <p class="card-text text-muted">Plan timetables, assign buses to routes</p>
+                <a href="{{ url_for('schedules.list_schedules') }}" class="btn btn-primary">
+                    <i class="bi bi-arrow-right-circle"></i> Manage Schedules
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Crew Management Card -->
+    <div class="col-12 col-md-6 col-lg-4">
+        <div class="card module-card h-100" style="border-left: 5px solid #fd7e14;">
+            <div class="card-body">
+                <h5 class="card-title">
+                    <i class="bi bi-people fs-3" style="color: #fd7e14;"></i>
+                    <span class="ms-2">Crew Management</span>
+                </h5>
+                <p class="card-text text-muted">Drivers, conductors, staff assignments</p>
+                <a href="{{ url_for('crew.list_crew') }}" class="btn" style="background-color: #fd7e14; color: white;">
+                    <i class="bi bi-arrow-right-circle"></i> Manage Crew
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Dashboard Card -->
+    <div class="col-12 col-md-6 col-lg-4">
+        <div class="card module-card h-100" style="border-left: 5px solid #20c997;">
+            <div class="card-body">
+                <h5 class="card-title">
+                    <i class="bi bi-graph-up fs-3" style="color: #20c997;"></i>
+                    <span class="ms-2">Dashboard</span>
+                </h5>
+                <p class="card-text text-muted">Analytics, charts, key statistics</p>
+                <a href="{{ url_for('dashboard.index') }}" class="btn" style="background-color: #20c997; color: white;">
+                    <i class="bi bi-arrow-right-circle"></i> View Dashboard
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Reports Card -->
+    <div class="col-12 col-md-6 col-lg-4">
+        <div class="card module-card h-100" style="border-left: 5px solid #6f42c1;">
+            <div class="card-body">
+                <h5 class="card-title">
+                    <i class="bi bi-file-earmark-text fs-3" style="color: #6f42c1;"></i>
+                    <span class="ms-2">Reports</span>
+                </h5>
+                <p class="card-text text-muted">Generate and export depot reports</p>
+                <a href="{{ url_for('reports.index') }}" class="btn" style="background-color: #6f42c1; color: white;">
+                    <i class="bi bi-arrow-right-circle"></i> View Reports
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
