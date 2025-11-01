@@ -1,0 +1,73 @@
+{% extends "base.html" %}
+
+{% block title %}{{ title }} - Bus Depot Management{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-8">
+        <h2 style="color: #fd7e14; border-left: 5px solid #fd7e14; padding-left: 15px;" class="mb-4">
+            <i class="bi bi-person-plus"></i> {{ title }}
+        </h2>
+
+        <div class="card">
+            <div class="card-body">
+                <form method="POST" novalidate>
+                    {{ form.hidden_tag() }}
+
+                    <div class="mb-3">
+                        {{ form.schedule_id.label(class="form-label") }}
+                        {{ form.schedule_id(class="form-select" + (" is-invalid" if form.schedule_id.errors else "")) }}
+                        <div class="form-text">Select the schedule to assign crew to</div>
+                        {% if form.schedule_id.errors %}
+                            <div class="invalid-feedback d-block">
+                                {{ form.schedule_id.errors[0] }}
+                            </div>
+                        {% endif %}
+                    </div>
+
+                    <div class="mb-3">
+                        {{ form.crew_id.label(class="form-label") }}
+                        {{ form.crew_id(class="form-select" + (" is-invalid" if form.crew_id.errors else "")) }}
+                        <div class="form-text">Select the crew member to assign</div>
+                        {% if form.crew_id.errors %}
+                            <div class="invalid-feedback d-block">
+                                {{ form.crew_id.errors[0] }}
+                            </div>
+                        {% endif %}
+                    </div>
+
+                    <div class="mb-3">
+                        {{ form.assignment_date.label(class="form-label") }}
+                        {{ form.assignment_date(class="form-control" + (" is-invalid" if form.assignment_date.errors else "")) }}
+                        {% if form.assignment_date.errors %}
+                            <div class="invalid-feedback d-block">
+                                {{ form.assignment_date.errors[0] }}
+                            </div>
+                        {% endif %}
+                    </div>
+
+                    <div class="mb-3">
+                        {{ form.notes.label(class="form-label") }}
+                        {{ form.notes(class="form-control" + (" is-invalid" if form.notes.errors else ""), rows=3, placeholder="Optional notes") }}
+                        <div class="form-text">Optional: Add any notes about this assignment</div>
+                        {% if form.notes.errors %}
+                            <div class="invalid-feedback d-block">
+                                {{ form.notes.errors[0] }}
+                            </div>
+                        {% endif %}
+                    </div>
+
+                    <div class="d-flex justify-content-between">
+                        <a href="{{ url_for('crew.list_assignments') }}" class="btn btn-secondary">
+                            <i class="bi bi-x-circle"></i> Cancel
+                        </a>
+                        <button type="submit" class="btn" style="background-color: #fd7e14; color: white;">
+                            <i class="bi bi-check-circle"></i> Assign Crew
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
