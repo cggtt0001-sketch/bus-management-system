@@ -56,7 +56,12 @@
                     </li>
                     <li class="nav-item">
                         <a class="nav-link {% if request.endpoint and request.endpoint.startswith('dashboard') %}active{% endif %}" href="{{ url_for('dashboard.index') }}">
-                            <span class="color-indicator" style="background-color: #20c997;"></span> Dashboard
+                            <span class="color-indicator" style="background-color: #20c997;"></span> Analytics
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link {% if request.endpoint == 'dashboard.map_dashboard' %}active{% endif %}" href="{{ url_for('dashboard.map_dashboard') }}">
+                            <span class="color-indicator" style="background-color: #dc3545;"></span> Live Map
                         </a>
                     </li>
                     <li class="nav-item">
