@@ -60,3 +60,66 @@ def index():
         frequency_data=frequency_data_json,
         route_data=route_data_json
     )
+
+
+def generate_mock_coordinates(bus_id, route_start_point, route_end_point):
+    """Generate realistic mock GPS coordinates for a bus"""
+
+    # City center coordinates (can be configured)
+    city_lat = 40.7128  # NYC latitude
+    city_lng = -74.0060  # NYC longitude
+
+    # Generate coordinates within city bounds
+    lat_offset = (random.random() - 0.5) * 0.1  # ±0.05 degrees
+    lng_offset = (random.random() - 0.5) * 0.1  # ±0.05 degrees
+
+    return {
+        'lat': city_lat + lat_offset,
+        'lng': city_lng + lng_offset,
+        'timestamp': datetime.utcnow()
+    }
+
+
+@dashboard_bp.route('/map')
+def map_dashboard():
+    """Display live map of active buses"""
+
+    # Get all active buses with their schedules and crew assignments
+    active_buses = db.session.query(Bus, Schedule, Route, Crew).join(
+        Schedule, Bus.id == Schedule.bus_id
+    ).join(
+        Route, Schedule.route_id == Route.id
+    ).join(
+        CrewAssignment, Schedule.id == CrewAssignment.schedule_id
+    ).join(
+        Crew, CrewAssignment.crew_id == Crew.id
+    ).filter(
+        Bus.status == 'active',
+        Schedule.active == True
+    ).all()
+
+    # Format data for JavaScript
+    bus_data = []
+    for bus, schedule, route, crew in active_buses:
+        # Generate mock GPS coordinates if not present
+        if bus.location_lat is None or bus.location_lng is None:
+            # Simple mock coordinates around city center (can be made more realistic)
+            bus.location_lat = 40.7128 + (random.random() - 0.5) * 0.1  # NYC area mock
+            bus.location_lng = -74.0060 + (random.random() - 0.5) * 0.1
+            bus.last_location_update = datetime.utcnow()
+
+        bus_data.append({
+            'id': bus.id,
+            'registration_number': bus.registration_number,
+            'lat': bus.location_lat,
+            'lng': bus.location_lng,
+            'status': bus.status,
+            'route_name': route.route_name,
+            'start_point': route.start_point,
+            'end_point': route.end_point,
+            'driver_name': crew.name if crew.role == 'Driver' else 'Unassigned',
+            'conductor_name': crew.name if crew.role == 'Conductor' else 'Unassigned',
+            'last_update': bus.last_location_update.isoformat() if bus.last_location_update else None
+        })
+
+    return render_template('dashboard/map.html', bus_data=bus_data)
