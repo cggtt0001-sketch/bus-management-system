@@ -93,3 +93,20 @@ class CrewAssignment(db.Model):
 
     def __repr__(self):
         return f'<CrewAssignment Crew:{self.crew_id} Schedule:{self.schedule_id}>'
+
+
+class WorkingHours(db.Model):
+    """Track crew working hours for reporting"""
+    __tablename__ = 'working_hours'
+
+    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
+    crew_id = db.Column(db.Integer, db.ForeignKey('crew.id'), nullable=False)
+    date = db.Column(db.Date, nullable=False)
+    hours_worked = db.Column(db.Float, nullable=False)  # Hours worked on this date
+    schedule_id = db.Column(db.Integer, db.ForeignKey('schedules.id'), nullable=True)  # Optional schedule reference
+
+    # Relationships
+    crew_member = db.relationship('Crew', backref='working_hours')
+
+    def __repr__(self):
+        return f'<WorkingHours Crew:{self.crew_id} Date:{self.date} Hours:{self.hours_worked}>'
