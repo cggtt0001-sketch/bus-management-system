@@ -11,27 +11,61 @@ def list_buses():
     buses = Bus.query.all()
     return render_template('buses/list.html', buses=buses)
 
-@buses_bp.route('/add', methods=['GET', 'POST'])
-def add_bus():
-    """Add a new bus"""
+@buses_bp.route('/create', methods=['GET', 'POST'])
+def create_bus():
+    """Create a new bus with optional route and crew assignment"""
     form = BusForm()
+
     if form.validate_on_submit():
-        try:
-            bus = Bus(
-                registration_number=form.registration_number.data,
-                capacity=form.capacity.data,
-                model=form.model.data,
-                status=form.status.data,
-                purchase_date=form.purchase_date.data
+        # Create bus
+        bus = Bus(
+            registration_number=form.registration_number.data,
+            capacity=form.capacity.data,
+            model=form.model.data,
+            purchase_date=form.purchase_date.data,
+            status='active'  # Automatically mark as active
+        )
+
+        db.session.add(bus)
+        db.session.flush()  # Get bus ID without committing
+
+        # If route and crew are assigned, create schedule and assignments
+        if form.route_id.data and form.driver_id.data:
+            # Create a default schedule
+            schedule = Schedule(
+                route_id=form.route_id.data,
+                bus_id=bus.id,
+                departure_time=datetime.now().time().replace(hour=8, minute=0),  # 8:00 AM default
+                arrival_time=datetime.now().time().replace(hour=17, minute=0),  # 5:00 PM default
+                frequency='daily',
+                active=True
             )
-            db.session.add(bus)
-            db.session.commit()
-            flash(f'Bus {bus.registration_number} added successfully!', 'success')
-            return redirect(url_for('buses.list_buses'))
-        except IntegrityError:
-            db.session.rollback()
-            flash('Registration number already exists.', 'danger')
-    return render_template('buses/form.html', form=form, title='Add New Bus')
+            db.session.add(schedule)
+            db.session.flush()  # Get schedule ID
+
+            # Assign driver
+            if form.driver_id.data:
+                driver_assignment = CrewAssignment(
+                    schedule_id=schedule.id,
+                    crew_id=form.driver_id.data,
+                    assignment_date=datetime.now().date()
+                )
+                db.session.add(driver_assignment)
+
+            # Assign conductor if provided
+            if form.conductor_id.data:
+                conductor_assignment = CrewAssignment(
+                    schedule_id=schedule.id,
+                    crew_id=form.conductor_id.data,
+                    assignment_date=datetime.now().date()
+                )
+                db.session.add(conductor_assignment)
+
+        db.session.commit()
+        flash(f'Bus {bus.registration_number} has been created successfully!', 'success')
+        return redirect(url_for('buses.list_buses'))
+
+    return render_template('buses/enhanced_form.html', form=form, title='Add New Bus')
 
 @buses_bp.route('/edit/<int:id>', methods=['GET', 'POST'])
 def edit_bus(id):
