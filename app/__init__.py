@@ -7,6 +7,53 @@ import os
 
 csrf = CSRFProtect()
 
+def ensure_database_schema():
+    """Ensure database has required columns and tables"""
+    db_path = 'bus_depot.db'
+
+    if not os.path.exists(db_path):
+        return
+
+    try:
+        conn = sqlite3.connect(db_path)
+        cursor = conn.cursor()
+
+        # Check if location columns exist in buses table
+        cursor.execute("PRAGMA table_info(buses)")
+        columns = [row[1] for row in cursor.fetchall()]
+
+        # Add missing columns
+        if 'location_lat' not in columns:
+            cursor.execute("ALTER TABLE buses ADD COLUMN location_lat REAL")
+
+        if 'location_lng' not in columns:
+            cursor.execute("ALTER TABLE buses ADD COLUMN location_lng REAL")
+
+        if 'last_location_update' not in columns:
+            cursor.execute("ALTER TABLE buses ADD COLUMN last_location_update DATETIME")
+
+        # Check if working_hours table exists
+        cursor.execute("SELECT name FROM sqlite_master WHERE type='table' AND name='working_hours'")
+        if not cursor.fetchone():
+            cursor.execute("""
+                CREATE TABLE working_hours (
+                    id INTEGER PRIMARY KEY AUTOINCREMENT,
+                    crew_id INTEGER NOT NULL,
+                    date DATE NOT NULL,
+                    hours_worked REAL NOT NULL,
+                    schedule_id INTEGER,
+                    FOREIGN KEY (crew_id) REFERENCES crew (id),
+                    FOREIGN KEY (schedule_id) REFERENCES schedules (id)
+                )
+            """)
+
+        conn.commit()
+        conn.close()
+
+    except Exception:
+        # Silently handle database errors - let the fix tool handle them
+        pass
+
 def create_app(config_class=Config):
     """Flask application factory"""
     app = Flask(__name__)
@@ -15,6 +62,9 @@ def create_app(config_class=Config):
     # Initialize extensions
     db.init_app(app)
     csrf.init_app(app)
+
+    # Ensure database schema is up to date
+    ensure_database_schema()
 
     # Register blueprints
     from app.blueprints.home import home_bp
