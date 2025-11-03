@@ -1,8 +1,10 @@
 from flask import render_template
 from app.blueprints.dashboard import dashboard_bp
-from app.models import Bus, Route, Schedule, Crew, db
+from app.models import Bus, Route, Schedule, Crew, CrewAssignment, db
 from sqlalchemy import func
 import json
+import random
+from datetime import datetime
 
 @dashboard_bp.route('/')
 def index():
