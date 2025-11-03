@@ -108,3 +108,30 @@ def delete_bus(id):
     db.session.commit()
     flash(f'Bus {bus.registration_number} deleted successfully!', 'success')
     return redirect(url_for('buses.list_buses'))
+
+
+@buses_bp.route('/active-by-route')
+def active_buses_by_route():
+    """View active buses filtered by route"""
+
+    routes = Route.query.all()
+    selected_route_id = request.args.get('route_id', type=int, default=None)
+
+    if selected_route_id:
+        # Get active buses for selected route
+        active_buses = db.session.query(Bus, Schedule, Route).join(
+            Schedule, Bus.id == Schedule.bus_id
+        ).join(
+            Route, Schedule.route_id == Route.id
+        ).filter(
+            Bus.status == 'active',
+            Schedule.active == True,
+            Route.id == selected_route_id
+        ).all()
+    else:
+        active_buses = []
+
+    return render_template('buses/active_by_route.html',
+                         routes=routes,
+                         selected_route_id=selected_route_id,
+                         active_buses=active_buses)
