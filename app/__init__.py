@@ -11,7 +11,20 @@ def ensure_database_schema():
     """Ensure database has required columns and tables"""
     db_path = 'bus_depot.db'
 
+    # Create database if it doesn't exist
     if not os.path.exists(db_path):
+        print("📋 Database not found. Running migration...")
+        try:
+            import subprocess
+            import sys
+            result = subprocess.run([sys.executable, 'migrate_database.py'],
+                                  capture_output=True, text=True, cwd=os.path.dirname(__file__) + '/..')
+            if result.returncode == 0:
+                print("✅ Database created and migrated successfully")
+            else:
+                print(f"❌ Migration failed: {result.stderr}")
+        except Exception as e:
+            print(f"❌ Error running migration: {e}")
         return
 
     try:
@@ -21,38 +34,61 @@ def ensure_database_schema():
         # Check if location columns exist in buses table
         cursor.execute("PRAGMA table_info(buses)")
         columns = [row[1] for row in cursor.fetchall()]
+        required_columns = ['location_lat', 'location_lng', 'last_location_update']
 
-        # Add missing columns
-        if 'location_lat' not in columns:
-            cursor.execute("ALTER TABLE buses ADD COLUMN location_lat REAL")
+        missing_columns = [col for col in required_columns if col not in columns]
 
-        if 'location_lng' not in columns:
-            cursor.execute("ALTER TABLE buses ADD COLUMN location_lng REAL")
+        if missing_columns:
+            print(f"🔧 Database missing columns: {', '.join(missing_columns)}")
+            print("🔧 Running automatic migration...")
 
-        if 'last_location_update' not in columns:
-            cursor.execute("ALTER TABLE buses ADD COLUMN last_location_update DATETIME")
+            # Add missing columns
+            for col in missing_columns:
+                if col == 'location_lat':
+                    cursor.execute("ALTER TABLE buses ADD COLUMN location_lat REAL")
+                elif col == 'location_lng':
+                    cursor.execute("ALTER TABLE buses ADD COLUMN location_lng REAL")
+                elif col == 'last_location_update':
+                    cursor.execute("ALTER TABLE buses ADD COLUMN last_location_update DATETIME")
+                print(f"✅ Added column: {col}")
 
-        # Check if working_hours table exists
-        cursor.execute("SELECT name FROM sqlite_master WHERE type='table' AND name='working_hours'")
-        if not cursor.fetchone():
-            cursor.execute("""
-                CREATE TABLE working_hours (
-                    id INTEGER PRIMARY KEY AUTOINCREMENT,
-                    crew_id INTEGER NOT NULL,
-                    date DATE NOT NULL,
-                    hours_worked REAL NOT NULL,
-                    schedule_id INTEGER,
-                    FOREIGN KEY (crew_id) REFERENCES crew (id),
-                    FOREIGN KEY (schedule_id) REFERENCES schedules (id)
-                )
-            """)
+            # Check if working_hours table exists
+            cursor.execute("SELECT name FROM sqlite_master WHERE type='table' AND name='working_hours'")
+            if not cursor.fetchone():
+                cursor.execute("""
+                    CREATE TABLE working_hours (
+                        id INTEGER PRIMARY KEY AUTOINCREMENT,
+                        crew_id INTEGER NOT NULL,
+                        date DATE NOT NULL,
+                        hours_worked REAL NOT NULL,
+                        schedule_id INTEGER,
+                        FOREIGN KEY (crew_id) REFERENCES crew (id),
+                        FOREIGN KEY (schedule_id) REFERENCES schedules (id)
+                    )
+                """)
+                print("✅ Created working_hours table")
 
-        conn.commit()
+            conn.commit()
+            print("✅ Database schema updated successfully")
+        else:
+            print("✅ Database schema is up to date")
+
         conn.close()
 
-    except Exception:
-        # Silently handle database errors - let the fix tool handle them
-        pass
+    except Exception as e:
+        print(f"❌ Error updating database schema: {e}")
+        # Try to run the migration script as fallback
+        try:
+            import subprocess
+            import sys
+            result = subprocess.run([sys.executable, 'migrate_database.py'],
+                                  capture_output=True, text=True, cwd=os.path.dirname(__file__) + '/..')
+            if result.returncode == 0:
+                print("✅ Migration script completed successfully")
+            else:
+                print(f"❌ Migration script failed: {result.stderr}")
+        except Exception as migration_error:
+            print(f"❌ Migration script error: {migration_error}")
 
 def create_app(config_class=Config):
     """Flask application factory"""
