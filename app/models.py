@@ -14,6 +14,11 @@ class Bus(db.Model):
     status = db.Column(db.String(20), nullable=False, default='active')  # active, inactive, maintenance
     purchase_date = db.Column(db.Date, nullable=True)
 
+    # GPS location fields for tracking
+    location_lat = db.Column(db.Float, nullable=True)  # Latitude for map display
+    location_lng = db.Column(db.Float, nullable=True)  # Longitude for map display
+    last_location_update = db.Column(db.DateTime, nullable=True)  # When location was last updated
+
     # Relationships
     schedules = db.relationship('Schedule', backref='bus', lazy=True, cascade='all, delete-orphan')
 
