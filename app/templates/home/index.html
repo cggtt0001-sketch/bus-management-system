@@ -73,17 +73,49 @@
         </div>
     </div>
 
-    <!-- Dashboard Card -->
+    <!-- Analytics Dashboard Card -->
     <div class="col-12 col-md-6 col-lg-4">
         <div class="card module-card h-100" style="border-left: 5px solid #20c997;">
             <div class="card-body">
                 <h5 class="card-title">
                     <i class="bi bi-graph-up fs-3" style="color: #20c997;"></i>
-                    <span class="ms-2">Dashboard</span>
+                    <span class="ms-2">Analytics</span>
                 </h5>
-                <p class="card-text text-muted">Analytics, charts, key statistics</p>
+                <p class="card-text text-muted">Charts, statistics, performance metrics</p>
                 <a href="{{ url_for('dashboard.index') }}" class="btn" style="background-color: #20c997; color: white;">
-                    <i class="bi bi-arrow-right-circle"></i> View Dashboard
+                    <i class="bi bi-arrow-right-circle"></i> View Analytics
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Live Map Card -->
+    <div class="col-12 col-md-6 col-lg-4">
+        <div class="card module-card h-100" style="border-left: 5px solid #dc3545;">
+            <div class="card-body">
+                <h5 class="card-title">
+                    <i class="bi bi-geo-alt-fill fs-3 text-danger"></i>
+                    <span class="ms-2">Live Map</span>
+                </h5>
+                <p class="card-text text-muted">Real-time bus tracking, crew locations, route status</p>
+                <a href="{{ url_for('dashboard.map_dashboard') }}" class="btn btn-danger">
+                    <i class="bi bi-geo-alt"></i> Live Tracking
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Enhanced Crew Management Card -->
+    <div class="col-12 col-md-6 col-lg-4">
+        <div class="card module-card h-100" style="border-left: 5px solid #fd7e14;">
+            <div class="card-body">
+                <h5 class="card-title">
+                    <i class="bi bi-people-fill fs-3" style="color: #fd7e14;"></i>
+                    <span class="ms-2">Crew Management</span>
+                </h5>
+                <p class="card-text text-muted">Enhanced crew tracking, working hours, role-based views</p>
+                <a href="{{ url_for('crew.enhanced_crew_list') }}" class="btn" style="background-color: #fd7e14; color: white;">
+                    <i class="bi bi-people"></i> Enhanced Crew
                 </a>
             </div>
         </div>
