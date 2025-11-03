@@ -1,0 +1,258 @@
+{% extends "base.html" %}
+
+{% block title %}Crew Management - Bus Depot Management{% endblock %}
+
+{% block content %}
+<h2 style="color: #fd7e14; border-left: 5px solid #fd7e14; padding-left: 15px;" class="mb-4">
+    <i class="bi bi-people-fill"></i> Crew Management
+</h2>
+
+<!-- Statistics Cards -->
+<div class="row g-3 mb-4">
+    <div class="col-12 col-md-3">
+        <div class="card text-white" style="background-color: #6f42c1;">
+            <div class="card-body">
+                <h5 class="card-title">Total Crew</h5>
+                <h3 class="mb-0">{{ stats.total }}</h3>
+            </div>
+        </div>
+    </div>
+    <div class="col-12 col-md-3">
+        <div class="card text-white" style="background-color: #28a745;">
+            <div class="card-body">
+                <h5 class="card-title">Drivers</h5>
+                <h3 class="mb-0">{{ stats.drivers }}</h3>
+            </div>
+        </div>
+    </div>
+    <div class="col-12 col-md-3">
+        <div class="card text-white" style="background-color: #007bff;">
+            <div class="card-body">
+                <h5 class="card-title">Conductors</h5>
+                <h3 class="mb-0">{{ stats.conductors }}</h3>
+            </div>
+        </div>
+    </div>
+    <div class="col-12 col-md-3">
+        <div class="card text-white" style="background-color: #fd7e14;">
+            <div class="card-body">
+                <h5 class="card-title">Maintenance</h5>
+                <h3 class="mb-0">{{ stats.maintenance }}</h3>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Filters and Search -->
+<div class="row mb-4">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-body">
+                <form method="GET" class="row g-3">
+                    <div class="col-md-4">
+                        <label for="role" class="form-label">Filter by Role</label>
+                        <select class="form-select" id="role" name="role">
+                            <option value="all" {% if role_filter == 'all' %}selected{% endif %}>All Roles</option>
+                            <option value="Driver" {% if role_filter == 'Driver' %}selected{% endif %}>Drivers</option>
+                            <option value="Conductor" {% if role_filter == 'Conductor' %}selected{% endif %}>Conductors</option>
+                            <option value="Maintenance Staff" {% if role_filter == 'Maintenance Staff' %}selected{% endif %}>Maintenance Staff</option>
+                        </select>
+                    </div>
+                    <div class="col-md-6">
+                        <label for="search" class="form-label">Search by Name</label>
+                        <input type="text" class="form-control" id="search" name="search"
+                               value="{{ search_query }}" placeholder="Enter crew member name...">
+                    </div>
+                    <div class="col-md-2">
+                        <label class="form-label">&nbsp;</label>
+                        <div class="d-grid">
+                            <button type="submit" class="btn btn-primary">
+                                <i class="bi bi-search"></i> Search
+                            </button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Crew List -->
+<div class="row">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h5 class="mb-0">
+                    <i class="bi bi-list-ul"></i>
+                    Crew Members
+                    {% if role_filter != 'all' or search_query %}
+                        <small class="text-muted">(Filtered)</small>
+                    {% endif %}
+                </h5>
+                <div>
+                    <a href="{{ url_for('crew.add_crew') }}" class="btn btn-success btn-sm">
+                        <i class="bi bi-plus-circle"></i> Add Crew Member
+                    </a>
+                    <a href="{{ url_for('crew.list_crew') }}" class="btn btn-outline-secondary btn-sm">
+                        <i class="bi bi-arrow-left"></i> Standard View
+                    </a>
+                </div>
+            </div>
+            <div class="card-body">
+                {% if crew_members %}
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead class="table-light">
+                            <tr>
+                                <th>Crew ID</th>
+                                <th>Name</th>
+                                <th>Role</th>
+                                <th>Contact Info</th>
+                                <th>Current Assignment</th>
+                                <th>Working Hours</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for crew in crew_members %}
+                            <tr>
+                                <td><span class="badge bg-secondary">{{ crew.crew_id }}</span></td>
+                                <td><strong>{{ crew.name }}</strong></td>
+                                <td>
+                                    {% if crew.role == 'Driver' %}
+                                        <span class="badge bg-success">{{ crew.role }}</span>
+                                    {% elif crew.role == 'Conductor' %}
+                                        <span class="badge bg-primary">{{ crew.role }}</span>
+                                    {% else %}
+                                        <span class="badge bg-warning">{{ crew.role }}</span>
+                                    {% endif %}
+                                </td>
+                                <td>{{ crew.contact_info }}</td>
+                                <td>
+                                    <!-- Find current assignment -->
+                                    {% set current_assignment = crew.assignments|selectattr('schedule.active')|first %}
+                                    {% if current_assignment %}
+                                        <small class="text-success">
+                                            <i class="bi bi-check-circle"></i>
+                                            {{ current_assignment.schedule.bus.registration_number }} - {{ current_assignment.schedule.route.route_name }}
+                                        </small>
+                                    {% else %}
+                                        <small class="text-muted">
+                                            <i class="bi bi-x-circle"></i> Unassigned
+                                        </small>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    <!-- Calculate total working hours (mock for now) -->
+                                    {% set total_hours = (crew.id * 8 + 40) %}
+                                    <span class="badge bg-info">{{ total_hours }} hrs</span>
+                                </td>
+                                <td>
+                                    <div class="btn-group btn-group-sm">
+                                        <a href="{{ url_for('crew.edit_crew', id=crew.id) }}" class="btn btn-outline-primary">
+                                            <i class="bi bi-pencil"></i>
+                                        </a>
+                                        <a href="{{ url_for('crew.list_assignments') }}" class="btn btn-outline-info">
+                                            <i class="bi bi-calendar-check"></i>
+                                        </a>
+                                        <button class="btn btn-outline-success" onclick="viewWorkingHours({{ crew.id }})">
+                                            <i class="bi bi-clock"></i>
+                                        </button>
+                                    </div>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                {% else %}
+                <div class="text-center py-4">
+                    <i class="bi bi-search fs-1 text-muted"></i>
+                    <h5 class="mt-3">No crew members found</h5>
+                    <p class="text-muted">Try adjusting your filters or add new crew members.</p>
+                    <a href="{{ url_for('crew.add_crew') }}" class="btn btn-primary">
+                        <i class="bi bi-plus-circle"></i> Add First Crew Member
+                    </a>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Working Hours Modal -->
+<div class="modal fade" id="workingHoursModal" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Working Hours Details</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <div id="workingHoursContent">
+                    <!-- Content loaded via JavaScript -->
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+function viewWorkingHours(crewId) {
+    // Mock data - in real implementation, fetch from API
+    const mockData = {
+        crewId: crewId,
+        totalHours: 156,
+        monthlyHours: [120, 135, 142, 156, 148, 160, 155, 149, 162, 158, 145, 151],
+        currentMonth: 156,
+        assignments: [
+            { date: '2025-01-15', hours: 8, route: 'Downtown Express', bus: 'BUS001' },
+            { date: '2025-01-14', hours: 7.5, route: 'Airport Shuttle', bus: 'BUS002' },
+            { date: '2025-01-13', hours: 8, route: 'City Circular', bus: 'BUS003' }
+        ]
+    };
+
+    const content = `
+        <div class="row">
+            <div class="col-md-6">
+                <h6>Total Hours (This Month)</h6>
+                <h3 class="text-primary">${mockData.currentHours} hrs</h3>
+            </div>
+            <div class="col-md-6">
+                <h6>Total Hours (All Time)</h6>
+                <h3 class="text-success">${mockData.totalHours} hrs</h3>
+            </div>
+        </div>
+        <hr>
+        <h6>Recent Assignments</h6>
+        <div class="table-responsive">
+            <table class="table table-sm">
+                <thead>
+                    <tr>
+                        <th>Date</th>
+                        <th>Hours</th>
+                        <th>Route</th>
+                        <th>Bus</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    ${mockData.assignments.map(a => `
+                        <tr>
+                            <td>${a.date}</td>
+                            <td>${a.hours}</td>
+                            <td>${a.route}</td>
+                            <td>${a.bus}</td>
+                        </tr>
+                    `).join('')}
+                </tbody>
+            </table>
+        </div>
+    `;
+
+    document.getElementById('workingHoursContent').innerHTML = content;
+    new bootstrap.Modal(document.getElementById('workingHoursModal')).show();
+}
+</script>
+{% endblock %}
