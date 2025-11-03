@@ -1,0 +1,164 @@
+{% extends "base.html" %}
+
+{% block title %}Active Buses by Route - Bus Management{% endblock %}
+
+{% block content %}
+<h2 style="color: #28a745; border-left: 5px solid #28a745; padding-left: 15px;" class="mb-4">
+    <i class="bi bi-bus-front-fill"></i> Active Buses by Route
+</h2>
+
+<!-- Route Selector -->
+<div class="row mb-4">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-body">
+                <form method="GET" class="row g-3 align-items-end">
+                    <div class="col-md-8">
+                        <label for="route_id" class="form-label">Select Route</label>
+                        <select class="form-select" id="route_id" name="route_id" onchange="this.form.submit()">
+                            <option value="">Choose a route to view active buses...</option>
+                            {% for route in routes %}
+                                <option value="{{ route.id }}" {% if selected_route_id == route.id %}selected{% endif %}>
+                                    {{ route.route_name }} ({{ route.start_point }} → {{ route.end_point }})
+                                </option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="btn-group w-100">
+                            <a href="{{ url_for('buses.active_by_route') }}" class="btn btn-outline-secondary">
+                                <i class="bi bi-arrow-clockwise"></i> Clear
+                            </a>
+                            <a href="{{ url_for('dashboard.map_dashboard') }}" class="btn btn-primary">
+                                <i class="bi bi-geo-alt"></i> View on Map
+                            </a>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Results -->
+{% if selected_route_id %}
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0">
+                        <i class="bi bi-bus-front"></i>
+                        Active Buses
+                        {% if selected_route_id %}
+                            on {{ routes|selectattr('id', 'equalto', selected_route_id)|first|attr('route_name') }}
+                        {% endif %}
+                    </h5>
+                    <span class="badge bg-success">{{ active_buses|length }} buses</span>
+                </div>
+                <div class="card-body">
+                    {% if active_buses %}
+                        <div class="table-responsive">
+                            <table class="table table-hover">
+                                <thead class="table-light">
+                                    <tr>
+                                        <th>Bus Registration</th>
+                                        <th>Capacity</th>
+                                        <th>Model</th>
+                                        <th>Route</th>
+                                        <th>Schedule</th>
+                                        <th>Assigned Crew</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for bus, schedule, route in active_buses %}
+                                    <tr>
+                                        <td>
+                                            <strong>{{ bus.registration_number }}</strong>
+                                            <span class="badge bg-success ms-2">Active</span>
+                                        </td>
+                                        <td>{{ bus.capacity }} seats</td>
+                                        <td>{{ bus.model or 'N/A' }}</td>
+                                        <td>
+                                            <div>
+                                                <strong>{{ route.route_name }}</strong>
+                                                <br>
+                                                <small class="text-muted">
+                                                    {{ route.start_point }} → {{ route.end_point }}
+                                                    ({{ route.distance }} km)
+                                                </small>
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <span class="badge bg-info">
+                                                <i class="bi bi-clock"></i>
+                                                {{ schedule.departure_time.strftime('%H:%M') }} - {{ schedule.arrival_time.strftime('%H:%M') }}
+                                            </span>
+                                            <br>
+                                            <small class="text-muted">{{ schedule.frequency }}</small>
+                                        </td>
+                                        <td>
+                                            {% set assignments = schedule.crew_assignments %}
+                                            {% if assignments %}
+                                                {% for assignment in assignments %}
+                                                    <div class="mb-1">
+                                                        <small>
+                                                            {% if assignment.crew_member.role == 'Driver' %}
+                                                                <i class="bi bi-person-badge text-success"></i>
+                                                            {% elif assignment.crew_member.role == 'Conductor' %}
+                                                                <i class="bi bi-person-badge text-primary"></i>
+                                                            {% endif %}
+                                                            {{ assignment.crew_member.name }}
+                                                            ({{ assignment.crew_member.crew_id }})
+                                                        </small>
+                                                    </div>
+                                                {% endfor %}
+                                            {% else %}
+                                                <small class="text-muted">
+                                                    <i class="bi bi-x-circle"></i> No crew assigned
+                                                </small>
+                                            {% endif %}
+                                        </td>
+                                        <td>
+                                            <div class="btn-group btn-group-sm">
+                                                <a href="{{ url_for('buses.edit_bus', id=bus.id) }}" class="btn btn-outline-primary">
+                                                    <i class="bi bi-pencil"></i>
+                                                </a>
+                                                <a href="{{ url_for('dashboard.map_dashboard') }}" class="btn btn-outline-success">
+                                                    <i class="bi bi-geo-alt"></i>
+                                                </a>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    {% else %}
+                        <div class="text-center py-4">
+                            <i class="bi bi-bus-front fs-1 text-muted"></i>
+                            <h5 class="mt-3">No active buses on this route</h5>
+                            <p class="text-muted">All buses on this route are currently inactive or no schedules are active.</p>
+                            <a href="{{ url_for('buses.create_bus') }}" class="btn btn-primary">
+                                <i class="bi bi-plus-circle"></i> Add New Bus
+                            </a>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+{% else %}
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-body text-center py-5">
+                    <i class="bi bi-signpost-2 fs-1 text-muted"></i>
+                    <h5 class="mt-3">Select a Route</h5>
+                    <p class="text-muted">Choose a route from the dropdown above to view active buses on that route.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endif %}
+{% endblock %}
