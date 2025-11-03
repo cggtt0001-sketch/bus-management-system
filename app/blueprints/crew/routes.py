@@ -144,3 +144,43 @@ def delete_assignment(id):
     db.session.commit()
     flash('Assignment removed successfully!', 'success')
     return redirect(url_for('crew.list_assignments'))
+
+
+@crew_bp.route('/enhanced')
+def enhanced_crew_list():
+    """Enhanced crew management with role filtering and search"""
+
+    # Get query parameters
+    role_filter = request.args.get('role', 'all')
+    search_query = request.args.get('search', '')
+
+    # Base query
+    query = Crew.query
+
+    # Apply role filter
+    if role_filter != 'all':
+        query = query.filter(Crew.role == role_filter)
+
+    # Apply search filter
+    if search_query:
+        query = query.filter(Crew.name.contains(search_query))
+
+    # Execute query
+    crew_members = query.all()
+
+    # Get statistics
+    total_crew = Crew.query.count()
+    drivers = Crew.query.filter_by(role='Driver').count()
+    conductors = Crew.query.filter_by(role='Conductor').count()
+    maintenance = Crew.query.filter_by(role='Maintenance Staff').count()
+
+    return render_template('crew/enhanced_list.html',
+                         crew_members=crew_members,
+                         role_filter=role_filter,
+                         search_query=search_query,
+                         stats={
+                             'total': total_crew,
+                             'drivers': drivers,
+                             'conductors': conductors,
+                             'maintenance': maintenance
+                         })
