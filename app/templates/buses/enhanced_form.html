@@ -1,0 +1,174 @@
+{% extends "base.html" %}
+
+{% block title %}{{ title }} - Bus Management{% endblock %}
+
+{% block content %}
+<h2 style="color: #28a745; border-left: 5px solid #28a745; padding-left: 15px;" class="mb-4">
+    <i class="bi bi-plus-circle"></i> {{ title }}
+</h2>
+
+<div class="row">
+    <div class="col-12 col-lg-8">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">
+                    <i class="bi bi-bus-front"></i> Bus Information
+                </h5>
+            </div>
+            <div class="card-body">
+                <form method="POST">
+                    {{ form.hidden_tag() }}
+
+                    <!-- Basic Information -->
+                    <h6 class="mb-3">Basic Information</h6>
+                    <div class="row g-3 mb-4">
+                        <div class="col-md-6">
+                            {{ form.registration_number.label(class="form-label") }}
+                            {{ form.registration_number(class="form-control") }}
+                            {% if form.registration_number.errors %}
+                                <div class="text-danger">
+                                    {% for error in form.registration_number.errors %}
+                                        <small>{{ error }}</small>
+                                    {% endfor %}
+                                </div>
+                            {% endif %}
+                        </div>
+                        <div class="col-md-6">
+                            {{ form.capacity.label(class="form-label") }}
+                            {{ form.capacity(class="form-control") }}
+                            {% if form.capacity.errors %}
+                                <div class="text-danger">
+                                    {% for error in form.capacity.errors %}
+                                        <small>{{ error }}</small>
+                                    {% endfor %}
+                                </div>
+                            {% endif %}
+                        </div>
+                        <div class="col-md-6">
+                            {{ form.model.label(class="form-label") }}
+                            {{ form.model(class="form-control") }}
+                        </div>
+                        <div class="col-md-6">
+                            {{ form.purchase_date.label(class="form-label") }}
+                            {{ form.purchase_date(class="form-control") }}
+                        </div>
+                    </div>
+
+                    <!-- Assignment Section -->
+                    <h6 class="mb-3">Initial Assignment (Optional)</h6>
+                    <div class="row g-3 mb-4">
+                        <div class="col-md-12">
+                            {{ form.route_id.label(class="form-label") }}
+                            {{ form.route_id(class="form-select") }}
+                            <small class="form-text text-muted">Select a route to automatically create a schedule and mark bus as active</small>
+                        </div>
+                        <div class="col-md-6">
+                            {{ form.driver_id.label(class="form-label") }}
+                            {{ form.driver_id(class="form-select") }}
+                            <small class="form-text text-muted">Driver will be assigned to the bus schedule</small>
+                        </div>
+                        <div class="col-md-6">
+                            {{ form.conductor_id.label(class="form-label") }}
+                            {{ form.conductor_id(class="form-select") }}
+                            <small class="form-text text-muted">Conductor will be assigned to the bus schedule</small>
+                        </div>
+                    </div>
+
+                    <!-- Assignment Preview -->
+                    <div id="assignmentPreview" class="alert alert-info" style="display: none;">
+                        <h6><i class="bi bi-info-circle"></i> Assignment Preview</h6>
+                        <div id="assignmentDetails">
+                            <!-- Details will be shown here -->
+                        </div>
+                    </div>
+
+                    <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                        <a href="{{ url_for('buses.list_buses') }}" class="btn btn-secondary">
+                            <i class="bi bi-x-circle"></i> Cancel
+                        </a>
+                        {{ form.submit(class="btn btn-success") }}
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Information Panel -->
+    <div class="col-12 col-lg-4">
+        <div class="card">
+            <div class="card-header">
+                <h6 class="mb-0"><i class="bi bi-lightbulb"></i> Quick Guide</h6>
+            </div>
+            <div class="card-body">
+                <h6>Basic Information</h6>
+                <p class="small text-muted">Enter the bus details. Registration number must be unique.</p>
+
+                <h6>Initial Assignment</h6>
+                <p class="small text-muted">Optionally assign a route, driver, and conductor. If you select a route, the bus will be automatically marked as active and a daily schedule will be created.</p>
+
+                <h6>After Creation</h6>
+                <p class="small text-muted">The bus will appear on the live map dashboard with mock GPS coordinates. You can modify assignments and schedules later.</p>
+            </div>
+        </div>
+
+        <div class="card mt-3">
+            <div class="card-header">
+                <h6 class="mb-0"><i class="bi bi-graph-up"></i> Current Fleet Status</h6>
+            </div>
+            <div class="card-body">
+                <div class="row text-center">
+                    <div class="col-6">
+                        <h4 class="text-success" style="margin-bottom: 0;">15</h4>
+                        <small class="text-muted">Active Buses</small>
+                    </div>
+                    <div class="col-6">
+                        <h4 class="text-secondary" style="margin-bottom: 0;">3</h4>
+                        <small class="text-muted">Inactive</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+// Show assignment preview when route is selected
+document.getElementById('route_id').addEventListener('change', function() {
+    const routeSelect = this;
+    const driverSelect = document.getElementById('driver_id');
+    const conductorSelect = document.getElementById('conductor_id');
+    const preview = document.getElementById('assignmentPreview');
+    const details = document.getElementById('assignmentDetails');
+
+    if (routeSelect.value && routeSelect.value !== '0') {
+        const routeText = routeSelect.options[routeSelect.selectedIndex].text;
+        const driverText = driverSelect.value && driverSelect.value !== '0' ?
+            driverSelect.options[driverSelect.selectedIndex].text : 'None';
+        const conductorText = conductorSelect.value && conductorSelect.value !== '0' ?
+            conductorSelect.options[conductorSelect.selectedIndex].text : 'None';
+
+        details.innerHTML = `
+            <p class="mb-1"><strong>Route:</strong> ${routeText}</p>
+            <p class="mb-1"><strong>Driver:</strong> ${driverText}</p>
+            <p class="mb-0"><strong>Conductor:</strong> ${conductorText}</p>
+            <hr class="my-2">
+            <p class="mb-0 small"><i class="bi bi-check-circle text-success"></i> A daily schedule (8:00 AM - 5:00 PM) will be created automatically</p>
+        `;
+        preview.style.display = 'block';
+    } else {
+        preview.style.display = 'none';
+    }
+});
+
+// Update preview when driver or conductor changes
+document.getElementById('driver_id').addEventListener('change', function() {
+    document.getElementById('route_id').dispatchEvent(new Event('change'));
+});
+
+document.getElementById('conductor_id').addEventListener('change', function() {
+    document.getElementById('route_id').dispatchEvent(new Event('change'));
+});
+</script>
+{% endblock %}
